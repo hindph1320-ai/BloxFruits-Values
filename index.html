@@ -1,146 +1,105 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8">
-<title>Blox Fruits Values</title>
+  <meta charset="UTF-8" />
+  <title>Blox Fruits Trade Compare</title>
+  <style>
+    body{margin:0;font-family:Arial;background:#0f172a;color:#fff;direction:rtl}
+    header{padding:20px;text-align:center;background:#020617;font-size:26px;font-weight:bold}
 
-<style>
-body{
-  margin:0;
-  font-family:Arial;
-  background:#0f172a;
-  color:#fff;
-  direction:rtl;
-}
-header{
-  padding:20px;
-  text-align:center;
-  background:#020617;
-  font-size:26px;
-  font-weight:bold;
-}
-.trade-box{
-  max-width:800px;
-  margin:25px auto;
-  padding:20px;
-  background:#020617;
-  border-radius:15px;
-  box-shadow:0 0 12px rgba(0,0,0,.5);
-  text-align:center;
-}
-.trade-inputs{
-  display:flex;
-  gap:10px;
-  margin-bottom:15px;
-}
-.trade-inputs input{
-  flex:1;
-  padding:12px;
-  border-radius:10px;
-  border:none;
-  font-size:16px;
-}
-.trade-box button{
-  padding:12px 25px;
-  border:none;
-  border-radius:10px;
-  background:#38bdf8;
-  font-size:16px;
-  cursor:pointer;
-}
-#result{
-  margin-top:15px;
-  font-size:20px;
-  font-weight:bold;
-}
-.container{
-  padding:20px;
-  max-width:800px;
-  margin:auto;
-}
-.card{
-  background:#020617;
-  border-radius:15px;
-  padding:15px;
-  display:flex;
-  gap:15px;
-  margin-bottom:10px;
-}
-img{
-  width:80px;
-  height:80px;
-  border-radius:12px;
-}
-.price{color:#22c55e;}
-</style>
+    .trade-area{max-width:1000px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .box{background:#020617;border-radius:16px;padding:15px}
+    .box h3{text-align:center;margin-top:0}
+
+    .slots{display:flex;gap:10px;flex-wrap:wrap}
+    .slot{
+      width:90px;height:90px;border:2px dashed #334155;
+      border-radius:14px;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;font-size:40px;color:#64748b
+    }
+    .slot img{width:100%;height:100%;border-radius:12px}
+
+    .fruit-picker{max-width:1000px;margin:20px auto;padding:20px;background:#020617;border-radius:16px}
+    .fruit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:15px}
+    .fruit{cursor:pointer;text-align:center}
+    .fruit img{width:80px;height:80px;border-radius:12px}
+    .fruit div{margin-top:5px;font-size:14px}
+
+    .result{text-align:center;font-size:22px;font-weight:bold;margin:20px}
+  </style>
 </head>
-
 <body>
 
-<header>Blox Fruits Values</header>
+<header>Blox Fruits Trade Compare</header>
 
-<div class="trade-box">
-  <h2>مقارنة التبادل</h2>
-  <div class="trade-inputs">
-    <input id="offer1" placeholder="عرضك (Dragon + Dough)">
-    <input id="offer2" placeholder="عرض الشخص الثاني">
+<div class="trade-area">
+  <div class="box">
+    <h3>عرضك</h3>
+    <div class="slots" id="offer1"></div>
   </div>
-  <button onclick="compareTrade()">قارن</button>
-  <div id="result"></div>
+  <div class="box">
+    <h3>عرض الطرف الثاني</h3>
+    <div class="slots" id="offer2"></div>
+  </div>
 </div>
 
-<div class="container" id="fruits"></div>
+<div class="fruit-picker">
+  <h3 style="text-align:center">اختر فاكهة</h3>
+  <div class="fruit-grid" id="fruitGrid"></div>
+</div>
+
+<div class="result" id="result"></div>
 
 <script>
 const fruits=[
- {name:"Dragon",price:4500000,image:"https://via.placeholder.com/80"},
- {name:"Leopard",price:5000000,image:"https://via.placeholder.com/80"},
- {name:"Dough",price:3500000,image:"https://via.placeholder.com/80"}
+ {name:'Dragon',price:4500000,image:'https://via.placeholder.com/80'},
+ {name:'Leopard',price:5000000,image:'https://via.placeholder.com/80'},
+ {name:'Dough',price:3500000,image:'https://via.placeholder.com/80'}
 ];
 
-const container=document.getElementById("fruits");
+let currentBox=null;
+const offer1=document.getElementById('offer1');
+const offer2=document.getElementById('offer2');
 
-fruits.forEach(f=>{
-  container.innerHTML+=`
-  <div class="card">
-    <img src="${f.image}">
-    <div>
-      <b>${f.name}</b><br>
-      <div class="price">${f.price.toLocaleString()} Beli</div>
-    </div>
-  </div>`;
-});
-
-function getValue(text){
-  let total=0;
-  fruits.forEach(f=>{
-    if(text.toLowerCase().includes(f.name.toLowerCase())){
-      total+=f.price;
-    }
-  });
-  return total;
+function createSlot(box){
+  const slot=document.createElement('div');
+  slot.className='slot';
+  slot.textContent='+';
+  slot.onclick=()=>currentBox=box;
+  box.appendChild(slot);
 }
 
-function compareTrade(){
-  const v1=getValue(offer1.value);
-  const v2=getValue(offer2.value);
-  const r=document.getElementById("result");
+createSlot(offer1);
+createSlot(offer2);
 
-  if(!v1||!v2){
-    r.textContent="⚠️ اكتب أسماء الفواكه صح";
-    r.style.color="#facc15";
-    return;
-  }
-  if(v1>v2){
-    r.textContent="❌ عرضك خسران";
-    r.style.color="#ef4444";
-  }else if(v2>v1){
-    r.textContent="❌ عرض الطرف الثاني خسران";
-    r.style.color="#ef4444";
-  }else{
-    r.textContent="⚖️ التبادل عادل";
-    r.style.color="#22c55e";
-  }
+const grid=document.getElementById('fruitGrid');
+fruits.forEach(f=>{
+  const d=document.createElement('div');
+  d.className='fruit';
+  d.innerHTML=`<img src="${f.image}"><div>${f.name}</div>`;
+  d.onclick=()=>addFruit(f);
+  grid.appendChild(d);
+});
+
+function addFruit(fruit){
+  if(!currentBox) return;
+  const slot=[...currentBox.children].find(s=>s.textContent==='+');
+  if(!slot) return;
+  slot.innerHTML=`<img src="${fruit.image}" title="${fruit.name}">`;
+  slot.dataset.price=fruit.price;
+  slot.dataset.name=fruit.name;
+  createSlot(currentBox);
+  calc();
+}
+
+function calc(){
+  const v1=[...offer1.children].reduce((a,s)=>a+(+s.dataset.price||0),0);
+  const v2=[...offer2.children].reduce((a,s)=>a+(+s.dataset.price||0),0);
+  const r=document.getElementById('result');
+  if(v1===0||v2===0){r.textContent='';return;}
+  if(v1>v2){r.textContent='❌ عرضك خسران';r.style.color='#ef4444';}
+  else if(v2>v1){r.textContent='❌ عرض الطرف الثاني خسران';r.style.color='#ef4444';}
+  else{r.textContent='⚖️ التبادل عادل';r.style.color='#22c55e';}
 }
 </script>
 
