@@ -1,107 +1,130 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>Blox Fruits Trade Compare</title>
-  <style>
-    body{margin:0;font-family:Arial;background:#0f172a;color:#fff;direction:rtl}
-    header{padding:20px;text-align:center;background:#020617;font-size:26px;font-weight:bold}
+<meta charset="UTF-8">
+<title>Blox Fruits Trade Calculator</title>
+<style>
+body{margin:0;font-family:Arial;background:#0b0f1a;color:#fff;direction:rtl}
+header{padding:20px;text-align:center;font-size:26px;font-weight:bold}
 
-    .trade-area{max-width:1000px;margin:20px auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:20px}
-    .box{background:#020617;border-radius:16px;padding:15px}
-    .box h3{text-align:center;margin-top:0}
+.trade-wrap{max-width:1100px;margin:30px auto;display:grid;grid-template-columns:1fr 1fr;gap:25px}
+.trade-box{background:#111827;border-radius:18px;padding:20px}
+.trade-box h3{text-align:center;margin-top:0}
 
-    .slots{display:flex;gap:10px;flex-wrap:wrap}
-    .slot{
-      width:90px;height:90px;border:2px dashed #334155;
-      border-radius:14px;display:flex;align-items:center;justify-content:center;
-      cursor:pointer;font-size:40px;color:#64748b
-    }
-    .slot img{width:100%;height:100%;border-radius:12px}
+.slots{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.slot{
+  height:90px;border-radius:14px;background:#020617;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:2px dashed #334155
+}
+.slot img{width:100%;height:100%;border-radius:12px}
+.slot span{font-size:38px;color:#64748b}
 
-    .fruit-picker{max-width:1000px;margin:20px auto;padding:20px;background:#020617;border-radius:16px}
-    .fruit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:15px}
-    .fruit{cursor:pointer;text-align:center}
-    .fruit img{width:80px;height:80px;border-radius:12px}
-    .fruit div{margin-top:5px;font-size:14px}
+.result{text-align:center;font-size:22px;font-weight:bold;margin:25px}
 
-    .result{text-align:center;font-size:22px;font-weight:bold;margin:20px}
-  </style>
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center}
+.modal-content{background:#020617;border-radius:18px;width:90%;max-width:700px;padding:20px}
+.modal-header{display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{margin:0}
+.close{cursor:pointer;font-size:22px}
+.search{width:100%;padding:10px;border-radius:10px;border:none;margin:15px 0}
+
+.fruit-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:15px}
+.fruit{text-align:center;cursor:pointer}
+.fruit img{width:70px;height:70px;border-radius:12px}
+.fruit div{margin-top:6px;font-size:13px}
+</style>
 </head>
 <body>
 
-<header>Blox Fruits Trade Compare</header>
+<header>Blox Fruits Trade Calculator</header>
 
-<div class="trade-area">
-  <div class="box">
+<div class="trade-wrap">
+  <div class="trade-box">
     <h3>عرضك</h3>
     <div class="slots" id="offer1"></div>
   </div>
-  <div class="box">
+  <div class="trade-box">
     <h3>عرض الطرف الثاني</h3>
     <div class="slots" id="offer2"></div>
   </div>
 </div>
 
-<div class="fruit-picker">
-  <h3 style="text-align:center">اختر فاكهة</h3>
-  <div class="fruit-grid" id="fruitGrid"></div>
-</div>
-
 <div class="result" id="result"></div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>Fruit Picker</h3>
+      <span class="close" onclick="closeModal()">✕</span>
+    </div>
+    <input class="search" id="search" placeholder="Search fruits...">
+    <div class="fruit-grid" id="fruitGrid"></div>
+  </div>
+</div>
 
 <script>
 const fruits=[
- {name:'Dragon',price:4500000,image:'https://via.placeholder.com/80'},
- {name:'Leopard',price:5000000,image:'https://via.placeholder.com/80'},
- {name:'Dough',price:3500000,image:'https://via.placeholder.com/80'}
+ {name:'West Dragon',price:4500000,image:'https://via.placeholder.com/80'},
+ {name:'East Dragon',price:4500000,image:'https://via.placeholder.com/80'},
+ {name:'Control',price:3200000,image:'https://via.placeholder.com/80'},
+ {name:'Kitsune',price:6000000,image:'https://via.placeholder.com/80'},
+ {name:'Gas',price:2500000,image:'https://via.placeholder.com/80'},
+ {name:'Tiger',price:2800000,image:'https://via.placeholder.com/80'}
 ];
 
-let currentBox=null;
-const offer1=document.getElementById('offer1');
-const offer2=document.getElementById('offer2');
+let activeSlot=null;
 
-function createSlot(box){
-  const slot=document.createElement('div');
-  slot.className='slot';
-  slot.textContent='+';
-  slot.onclick=()=>currentBox=box;
-  box.appendChild(slot);
+function init(box){
+  for(let i=0;i<8;i++){
+    const s=document.createElement('div');
+    s.className='slot';
+    s.innerHTML='<span>+</span>';
+    s.onclick=()=>{activeSlot=s;openModal()};
+    box.appendChild(s);
+  }
 }
 
-createSlot(offer1);
-createSlot(offer2);
+init(offer1);init(offer2);
 
 const grid=document.getElementById('fruitGrid');
-fruits.forEach(f=>{
-  const d=document.createElement('div');
-  d.className='fruit';
-  d.innerHTML=`<img src="${f.image}"><div>${f.name}</div>`;
-  d.onclick=()=>addFruit(f);
-  grid.appendChild(d);
-});
+function renderGrid(list){
+  grid.innerHTML='';
+  list.forEach(f=>{
+    const d=document.createElement('div');
+    d.className='fruit';
+    d.innerHTML=`<img src="${f.image}"><div>${f.name}</div>`;
+    d.onclick=()=>selectFruit(f);
+    grid.appendChild(d);
+  });
+}
+renderGrid(fruits);
 
-function addFruit(fruit){
-  if(!currentBox) return;
-  const slot=[...currentBox.children].find(s=>s.textContent==='+');
-  if(!slot) return;
-  slot.innerHTML=`<img src="${fruit.image}" title="${fruit.name}">`;
-  slot.dataset.price=fruit.price;
-  slot.dataset.name=fruit.name;
-  createSlot(currentBox);
+function openModal(){modal.style.display='flex'}
+function closeModal(){modal.style.display='none'}
+
+function selectFruit(f){
+  activeSlot.innerHTML=`<img src="${f.image}" title="${f.name}">`;
+  activeSlot.dataset.price=f.price;
+  closeModal();
   calc();
+}
+
+search.oninput=()=>{
+  const v=search.value.toLowerCase();
+  renderGrid(fruits.filter(f=>f.name.toLowerCase().includes(v)));
 }
 
 function calc(){
   const v1=[...offer1.children].reduce((a,s)=>a+(+s.dataset.price||0),0);
   const v2=[...offer2.children].reduce((a,s)=>a+(+s.dataset.price||0),0);
-  const r=document.getElementById('result');
-  if(v1===0||v2===0){r.textContent='';return;}
-  if(v1>v2){r.textContent='❌ عرضك خسران';r.style.color='#ef4444';}
-  else if(v2>v1){r.textContent='❌ عرض الطرف الثاني خسران';r.style.color='#ef4444';}
-  else{r.textContent='⚖️ التبادل عادل';r.style.color='#22c55e';}
+  if(!v1||!v2){result.textContent='';return}
+  if(v1>v2){result.textContent='❌ عرضك خسران';result.style.color='#ef4444'}
+  else if(v2>v1){result.textContent='❌ عرض الطرف الثاني خسران';result.style.color='#ef4444'}
+  else{result.textContent='⚖️ التبادل عادل';result.style.color='#22c55e'}
 }
 </script>
-
 </body>
 </html>
