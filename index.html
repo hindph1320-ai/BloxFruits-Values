@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Blox Fruits Values</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: #fff;
+    }
+    header {
+      padding: 20px;
+      text-align: center;
+      background: #020617;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    .container {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: scale(1.05); }
+    .fruit-name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .rarity { opacity: 0.8; margin-top: 5px; }
+    .value { margin-top: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <header>Blox Fruits Values</header>
+
+  <div class="container" id="fruits"></div>
+
+  <script>
+    const fruits = [
+      { name: "Dragon", rarity: "Mythical", value: "4,500,000" },
+      { name: "Leopard", rarity: "Mythical", value: "5,000,000" },
+      { name: "Dough", rarity: "Mythical", value: "3,500,000" },
+      { name: "Spirit", rarity: "Mythical", value: "3,000,000" },
+      { name: "Venom", rarity: "Mythical", value: "2,800,000" },
+      { name: "Shadow", rarity: "Mythical", value: "2,500,000" }
+    ];
+
+    const container = document.getElementById('fruits');
+
+    fruits.forEach(fruit => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="fruit-name">${fruit.name}</div>
+        <div class="rarity">${fruit.rarity}</div>
+        <div class="value">Value: ${fruit.value}</div>
+      `;
+      container.appendChild(card);
+    });
+  </script>
+</body>
+</html>
