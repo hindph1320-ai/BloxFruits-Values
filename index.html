@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar">
 <head>
   <meta charset="UTF-8" />
   <title>Blox Fruits Values</title>
@@ -9,62 +9,112 @@
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: #fff;
+      direction: rtl;
     }
     header {
       padding: 20px;
       text-align: center;
       background: #020617;
-      font-size: 24px;
+      font-size: 26px;
       font-weight: bold;
     }
     .container {
       padding: 20px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      display: flex;
+      flex-direction: column;
       gap: 15px;
+      max-width: 800px;
+      margin: auto;
     }
     .card {
       background: #020617;
-      border-radius: 12px;
+      border-radius: 15px;
       padding: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.4);
-      transition: transform 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.5);
     }
-    .card:hover { transform: scale(1.05); }
-    .fruit-name {
-      font-size: 18px;
+    .card img {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      background: #111827;
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .name {
+      font-size: 20px;
       font-weight: bold;
     }
-    .rarity { opacity: 0.8; margin-top: 5px; }
-    .value { margin-top: 10px; font-size: 16px; }
+    .rarity { opacity: 0.8; }
+    .value { color: #38bdf8; font-weight: bold; }
+    .price { color: #22c55e; }
   </style>
 </head>
 <body>
   <header>Blox Fruits Values</header>
 
+  <div style="max-width:800px;margin:15px auto;padding:0 20px;">
+    <input id="search" placeholder="ابحث عن فاكهة..." style="width:100%;padding:12px;border-radius:10px;border:none;font-size:16px;">
+  </div>
+
   <div class="container" id="fruits"></div>
 
   <script>
     const fruits = [
-      { name: "Dragon", rarity: "Mythical", value: "4,500,000" },
-      { name: "Leopard", rarity: "Mythical", value: "5,000,000" },
-      { name: "Dough", rarity: "Mythical", value: "3,500,000" },
-      { name: "Spirit", rarity: "Mythical", value: "3,000,000" },
-      { name: "Venom", rarity: "Mythical", value: "2,800,000" },
-      { name: "Shadow", rarity: "Mythical", value: "2,500,000" }
+      {
+        name: "Dragon",
+        rarity: "Mythical",
+        value: "High Value",
+        price: "4,500,000 Beli",
+        image: "https://static.wikia.nocookie.net/roblox-blox-piece/images/2/29/Dragon_Fruit.png/revision/latest/scale-to-width/360?cb=20241218114129"
+      },
+      {
+        name: "Leopard",
+        rarity: "Mythical",
+        value: "Very High Value",
+        price: "5,000,000 Beli",
+        image: "https://via.placeholder.com/80"
+      },
+      {
+        name: "Dough",
+        rarity: "Mythical",
+        value: "High Value",
+        price: "3,500,000 Beli",
+        image: "https://via.placeholder.com/80"
+      }
     ];
 
     const container = document.getElementById('fruits');
 
-    fruits.forEach(fruit => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="fruit-name">${fruit.name}</div>
-        <div class="rarity">${fruit.rarity}</div>
-        <div class="value">Value: ${fruit.value}</div>
-      `;
-      container.appendChild(card);
+    function renderFruits(list) {
+      container.innerHTML = '';
+      list.forEach(fruit => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `
+          <img src="${fruit.image}" alt="${fruit.name}">
+          <div class="info">
+            <div class="name">${fruit.name}</div>
+            <div class="rarity">${fruit.rarity}</div>
+            <div class="value">Value: ${fruit.value}</div>
+            <div class="price">Price: ${fruit.price}</div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    renderFruits(fruits);
+
+    document.getElementById('search').addEventListener('input', e => {
+      const value = e.target.value.toLowerCase();
+      const filtered = fruits.filter(f => f.name.toLowerCase().includes(value));
+      renderFruits(filtered);
     });
   </script>
 </body>
