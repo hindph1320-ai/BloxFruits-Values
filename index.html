@@ -1,121 +1,148 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8" />
-  <title>Blox Fruits Values</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0f172a;
-      color: #fff;
-      direction: rtl;
-    }
-    header {
-      padding: 20px;
-      text-align: center;
-      background: #020617;
-      font-size: 26px;
-      font-weight: bold;
-    }
-    .container {
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      max-width: 800px;
-      margin: auto;
-    }
-    .card {
-      background: #020617;
-      border-radius: 15px;
-      padding: 15px;
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.5);
-    }
-    .card img {
-      width: 80px;
-      height: 80px;
-      border-radius: 12px;
-      background: #111827;
-    }
-    .info {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .name {
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .rarity { opacity: 0.8; }
-    .value { color: #38bdf8; font-weight: bold; }
-    .price { color: #22c55e; }
-  </style>
+<meta charset="UTF-8">
+<title>Blox Fruits Values</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:#fff;
+  direction:rtl;
+}
+header{
+  padding:20px;
+  text-align:center;
+  background:#020617;
+  font-size:26px;
+  font-weight:bold;
+}
+.trade-box{
+  max-width:800px;
+  margin:25px auto;
+  padding:20px;
+  background:#020617;
+  border-radius:15px;
+  box-shadow:0 0 12px rgba(0,0,0,.5);
+  text-align:center;
+}
+.trade-inputs{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+.trade-inputs input{
+  flex:1;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+}
+.trade-box button{
+  padding:12px 25px;
+  border:none;
+  border-radius:10px;
+  background:#38bdf8;
+  font-size:16px;
+  cursor:pointer;
+}
+#result{
+  margin-top:15px;
+  font-size:20px;
+  font-weight:bold;
+}
+.container{
+  padding:20px;
+  max-width:800px;
+  margin:auto;
+}
+.card{
+  background:#020617;
+  border-radius:15px;
+  padding:15px;
+  display:flex;
+  gap:15px;
+  margin-bottom:10px;
+}
+img{
+  width:80px;
+  height:80px;
+  border-radius:12px;
+}
+.price{color:#22c55e;}
+</style>
 </head>
+
 <body>
-  <header>Blox Fruits Values</header>
 
-  <div style="max-width:800px;margin:15px auto;padding:0 20px;">
-    <input id="search" placeholder="ابحث عن فاكهة..." style="width:100%;padding:12px;border-radius:10px;border:none;font-size:16px;">
+<header>Blox Fruits Values</header>
+
+<div class="trade-box">
+  <h2>مقارنة التبادل</h2>
+  <div class="trade-inputs">
+    <input id="offer1" placeholder="عرضك (Dragon + Dough)">
+    <input id="offer2" placeholder="عرض الشخص الثاني">
   </div>
+  <button onclick="compareTrade()">قارن</button>
+  <div id="result"></div>
+</div>
 
-  <div class="container" id="fruits"></div>
+<div class="container" id="fruits"></div>
 
-  <script>
-    const fruits = [
-      {
-        name: "Dragon",
-        rarity: "Mythical",
-        value: "High Value",
-        price: "4,500,000 Beli",
-        image: "https://via.placeholder.com/80"
-      },
-      {
-        name: "Leopard",
-        rarity: "Mythical",
-        value: "Very High Value",
-        price: "5,000,000 Beli",
-        image: "https://via.placeholder.com/80"
-      },
-      {
-        name: "Dough",
-        rarity: "Mythical",
-        value: "High Value",
-        price: "3,500,000 Beli",
-        image: "https://via.placeholder.com/80"
-      }
-    ];
+<script>
+const fruits=[
+ {name:"Dragon",price:4500000,image:"https://via.placeholder.com/80"},
+ {name:"Leopard",price:5000000,image:"https://via.placeholder.com/80"},
+ {name:"Dough",price:3500000,image:"https://via.placeholder.com/80"}
+];
 
-    const container = document.getElementById('fruits');
+const container=document.getElementById("fruits");
 
-    function renderFruits(list) {
-      container.innerHTML = '';
-      list.forEach(fruit => {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <img src="${fruit.image}" alt="${fruit.name}">
-          <div class="info">
-            <div class="name">${fruit.name}</div>
-            <div class="rarity">${fruit.rarity}</div>
-            <div class="value">Value: ${fruit.value}</div>
-            <div class="price">Price: ${fruit.price}</div>
-          </div>
-        `;
-        container.appendChild(card);
-      });
+fruits.forEach(f=>{
+  container.innerHTML+=`
+  <div class="card">
+    <img src="${f.image}">
+    <div>
+      <b>${f.name}</b><br>
+      <div class="price">${f.price.toLocaleString()} Beli</div>
+    </div>
+  </div>`;
+});
+
+function getValue(text){
+  let total=0;
+  fruits.forEach(f=>{
+    if(text.toLowerCase().includes(f.name.toLowerCase())){
+      total+=f.price;
     }
+  });
+  return total;
+}
 
-    renderFruits(fruits);
+function compareTrade(){
+  const v1=getValue(offer1.value);
+  const v2=getValue(offer2.value);
+  const r=document.getElementById("result");
 
-    document.getElementById('search').addEventListener('input', e => {
-      const value = e.target.value.toLowerCase();
-      const filtered = fruits.filter(f => f.name.toLowerCase().includes(value));
-      renderFruits(filtered);
-    });
-  </script>
+  if(!v1||!v2){
+    r.textContent="⚠️ اكتب أسماء الفواكه صح";
+    r.style.color="#facc15";
+    return;
+  }
+  if(v1>v2){
+    r.textContent="❌ عرضك خسران";
+    r.style.color="#ef4444";
+  }else if(v2>v1){
+    r.textContent="❌ عرض الطرف الثاني خسران";
+    r.style.color="#ef4444";
+  }else{
+    r.textContent="⚖️ التبادل عادل";
+    r.style.color="#22c55e";
+  }
+}
+</script>
+
 </body>
 </html>
